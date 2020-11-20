@@ -1,0 +1,84 @@
+﻿
+@{
+    ViewBag.Title = "Top 5 sản phẩm bán chạy";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Asset/Admin/vendor/chart.js/Chart.min.js"></script>
+<!-- Pie Chart -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <p class="m-0 font-weight-bold text-primary">Top 5 sản phẩm bán chạy và số lượng bán ra mỗi tháng</p>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">Tùy chọn</div>
+                    <a class="dropdown-item" href="/Admin/Home/AmountProduct">Làm mới</a>
+                    @*<a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>*@
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-area">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.onload = function () {
+        // Pie Chart Example
+        var nameArray =@Html.Raw(Json.Encode(ViewBag.Name));
+        var dataArray1 =@Html.Raw(Json.Encode(ViewBag.Product1));
+        var dataArray2 =@Html.Raw(Json.Encode(ViewBag.Product2));
+        var dataArray3 =@Html.Raw(Json.Encode(ViewBag.Product3));
+        var dataArray4 =@Html.Raw(Json.Encode(ViewBag.Product4));
+        var dataArray5 =@Html.Raw(Json.Encode(ViewBag.Product5));
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [{ 
+                    data: dataArray1,
+                    label: nameArray[0],
+                    backgroundColor: "#3e95cd",
+                    borderColor: "#3e95cd",
+                    fill: false
+                    }, { 
+                        data: dataArray2,
+                        label: nameArray[1],
+                        backgroundColor: "#8e5ea2",
+                        borderColor: "#8e5ea2",
+                        fill: false
+                    }, { 
+                        data: dataArray3,
+                        label: nameArray[2],
+                        backgroundColor: "#3cba9f",
+                        borderColor: "#3cba9f",
+                        fill: false
+                    }, { 
+                        data: dataArray4,
+                        label: nameArray[3],
+                        backgroundColor: "#e8c3b9",
+                        borderColor: "#e8c3b9",
+                        fill: false
+                    }, { 
+                        data: dataArray5,
+                        label: nameArray[4],
+                        backgroundColor: "#c45850",
+                        borderColor: "#c45850",
+                        fill: false
+                    }
+                ]
+                }
+            });
+
+    }
+</script>

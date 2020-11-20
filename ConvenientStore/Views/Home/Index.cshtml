@@ -1,0 +1,217 @@
+﻿
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var specialOfferList = (List<Models.EF.Product>)ViewBag.SpecialOffer;
+    var category = (List<Models.EF.ProductCategory>)ViewBag.ProductCategory;
+    var product = (List<Models.EF.Product>)ViewBag.Product;
+    var rating = (List<Models.EF.ProductRate>)ViewBag.Rating;
+}
+<!---->
+@*<div data-vide-bg="/Asset/User/video/video">
+        <div class="container">
+            <div class="banner-info">
+                <h3>
+                    Cửa hàng tiện ích
+                </h3>
+            </div>
+        </div>
+    </div>*@
+<script>window.jQuery || document.write('<script src="~/Asset/User/js/vendor/jquery-1.11.1.min.js"><\/script>')</script>
+<script src="~/Asset/User/js/jquery.vide.min.js"></script>
+
+<!--content-->
+<input type="hidden" id="session" value="@ViewBag.Session" />
+<div class="content-top ">
+    <div class="container ">
+        <div class="spec ">
+            <h3>Hàng khuyên dùng</h3>
+            <div class="ser-t">
+                <b></b>
+                <span><i></i></span>
+                <b class="line"></b>
+            </div>
+        </div>
+        <div class="tab-head ">
+            <!--Tab category-->
+            <nav class="nav-sidebar">
+                <ul class="nav tabs ">
+                    @foreach (var cate in category)
+                    {
+                        if (cate == category[0])
+                        {
+                            <li class="active"><a href="#@cate.CateID" data-toggle="tab">@cate.Name</a></li>
+                        }
+                        else
+                        {
+                            <li class=""><a href="#@cate.CateID" data-toggle="tab">@cate.Name</a></li>
+                        }
+                    }
+                </ul>
+            </nav>
+            <div class=" tab-content tab-content-t ">
+                @foreach (var cate in category)
+                {
+                    if (cate == category[0])
+                    {
+                        <div class="tab-pane active text-style" id="@cate.CateID">
+                            <div class=" con-w3l">
+                                @foreach (var item in specialOfferList)
+                                {
+                                    if (item.CategoryID == cate.CateID)
+                                    {
+                                        var url = "/san-pham/chi-tiet/" + item.MetaTitle + "/" + item.ProductID;
+                                        <div class="col-md-3 pro-1">
+                                            <div class="col-m">
+                                                <a href="#" data-toggle="modal" data-target="#@item.PopupID" class="offer-img">
+                                                    <img style="height:96px; width:96px;" src="@item.Image" class="img-responsive" alt="Ảnh minh họa">
+                                                    <div class="offer"><p><span>Khuyên dùng</span></p></div>
+                                                </a>
+                                                <div class="mid-1">
+                                                    <div class="women">
+                                                        @if (ViewBag.Session == null)
+                                                        {
+                                                            <h6><a href="@url">@item.Name</a></h6>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h6><a href="/Product/AddWatchedProduct?id=@item.ProductID">@item.Name</a></h6>
+                                                        }
+                                                    </div>
+                                                    <div class="mid-2">
+                                                        <p><label>@item.Price<sup>đ</sup></label><em class="item_price">@item.PromotionPrice<sup>đ</sup></em></p>
+                                                        @*<div class="block">
+                                                                <script>
+                                                                    $(function () {
+
+                                                                        $('#rating').rateYo({
+                                                                            rating: @item.RateStar,
+                                                                            readOnly: true,
+                                                                        });
+
+                                                                    });
+                                                                </script>
+                                                                <div id=rating></div>
+                                                            </div>*@
+                                                        <div class="clearfix"></div>
+                                                    </div>
+                                                    <div class="add">
+                                                        <h4><a class="btn btn-success addcart" href="/Cart/AddCart?productID=@item.ProductID&quantity=1">Thêm vào giỏ hàng</a></h4>
+                                                    </div>
+                                                    @*<div class="add">
+                                                            <button class="btn btn-danger my-cart-btn my-cart-b " data-id="1" data-name="Moong" data-summary="summary 1" data-price="1.50" data-quantity="1" data-image="~/Asset/User/images//of.png">Add to Cart</button>
+                                                        </div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                }
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="tab-pane text-style" id="@cate.CateID">
+                            <div class=" con-w3l">
+                                @foreach (var item in specialOfferList)
+                                {
+                                    if (item.CategoryID == cate.CateID)
+                                    {
+                                        var url = "/san-pham/chi-tiet/" + item.MetaTitle + "/" + item.ProductID;
+                                        <div class="col-md-3 pro-1">
+                                            <div class="col-m">
+                                                <a href="#" data-toggle="modal" data-target="#@item.PopupID" class="offer-img">
+                                                    <img style="height:96px; width:96px;" src="@item.Image" class="img-responsive" alt="Ảnh minh họa">
+                                                    <div class="offer"><p><span>Khuyên dùng</span></p></div>
+                                                </a>
+                                                <div class="mid-1">
+                                                    <div class="women">
+                                                        @if (ViewBag.Session == null)
+                                                        {
+                                                            <h6><a href="@url">@Server.HtmlEncode(item.Name)</a></h6>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h6><a href="/Product/AddWatchedProduct?id=@item.ProductID">@item.Name</a></h6>
+                                                        }
+                                                    </div>
+                                                    <div class="mid-2">
+                                                        <p><label>@item.Price<sup>đ</sup></label><em class="item_price">@item.PromotionPrice<sup>đ</sup></em></p>
+                                                        <div class="clearfix"></div>
+                                                    </div>
+                                                    <div class="add">
+                                                        <h4><a class="btn btn-success addcart" href="/Cart/AddCart?productID=@item.ProductID&quantity=1">Thêm vào giỏ hàng</a></h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                }
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-mid">
+
+</div>
+@{Html.RenderAction("Slide", "Home"); }
+<!--content-->
+<div class="product">
+    <div class="container">
+
+    </div>
+</div>
+<!--Pop Up-->
+@foreach (var item in product)
+{
+    <div class="modal fade" id="@item.PopupID" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content modal-info">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body modal-spa">
+                    <div class="col-md-5 span-2">
+                        <div class="item">
+                            <img src="@item.Image" class="img-responsive" alt="">
+                        </div>
+                    </div>
+                    <div class="col-md-7 span-1 ">
+                        <h3>@item.Name</h3>
+                        <p class="in-para">@item.Descriptions</p>
+                        <div class="price_single">
+                            <span class="reducedfrom ">Gía tiền:<del>@item.Price<sup>đ</sup></del> @item.PromotionPrice<sup>đ</sup></span>
+
+                            <div class="clearfix"></div>
+                        </div>
+                        @*<p class="quick_desc">@Html.Raw(item.Detail)</p>*@
+                        <div class="add">
+                            <h4><a class="btn btn-success addcart" href="/Cart/AddCart?productID=@item.ProductID&quantity=1">Thêm vào giỏ hàng</a></h4>
+                        </div>
+                    </div>
+                    <div class="clearfix"> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+    <script>
+        $(".addcart").off('click').on('click', function (e) {
+            var str = "null";
+            if ($("#session").val() == str) {
+                alert("Vui lòng đăng nhập");
+            }
+            else {
+                alert("Thêm vào giỏ hàng thành công");
+            }
+        });
+    </script>

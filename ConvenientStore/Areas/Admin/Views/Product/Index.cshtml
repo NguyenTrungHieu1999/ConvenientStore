@@ -1,0 +1,121 @@
+﻿@model PagedList.IPagedList<Models.EF.Product>
+@using PagedList.Mvc;
+@using System.Drawing;
+@using ZXing;
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section jsFooter{
+    <script src="~/Asset/Admin/js/controller/productController.js"></script>
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Tạo sản phẩm</h6>
+    </div>
+    <div class="card-body">
+        <div style="float:right;">
+            <a href="~/Admin/Product/Create" class="btn btn-primary">Thêm sản phẩm</a>
+        </div>
+        @using (Html.BeginForm("Index", "Product", FormMethod.Get))
+        {
+            <div>
+                <input class="form-control" style="width:50%; display:inline;" type="text" value="@ViewBag.SearchString" name="searchString" placeholder="Tìm kiếm tên sản phẩm" />
+                <button class="btn btn-success" type="submit">Tìm kiếm</button>
+            </div>
+        }
+        <br />
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Mô tả</th>
+                        <th>BarCode</th>
+                        <th>Hình ảnh</th>
+                        <th>Gía khuyến mãi</th>
+                        <th>Số lượng</th>
+                        <th>Tình trạng</th>
+                        <th>Tùy chọn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr id="row_@item.ProductID">
+                        <td>@item.Name</td>
+                        <td>@item.Descriptions</td>
+                        @{
+                            //Thêm barcode
+                            Image img = null;
+                            using (var ms = new MemoryStream())
+                            {
+                                var writer = new ZXing.BarcodeWriter() { Format = BarcodeFormat.CODE_128 };
+                                writer.Options.Height = 40;
+                                writer.Options.Width = 140;
+                                writer.Options.PureBarcode = true;
+                                img = writer.Write(item.BarCode);
+                                img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                ViewBag.BarcodeImage = "data:image/png;base64," + Convert.ToBase64String(ms.ToArray());
+                                //return File(ms.ToArray(), "image/jpeg");
+                            }
+                            if (ViewBag.BarcodeImage != null)
+                            {
+                                <td><img src="@ViewBag.BarcodeImage" alt="" /></td>
+                            }
+                        }
+                        <td align="center">
+                            <img src="@item.Image" alt="Ảnh minh họa sản phẩm" width="50px" height="50px" />
+                        </td>
+                        <td>@item.PromotionPrice<sup>đ</sup></td>
+                        <td>@item.Quantity</td>
+                        <td><a href="#" class="btn-productactive" data-id="@item.ProductID">@Html.Raw(item.Status ? "Còn hàng" : "Hết hàng")</a></td>
+                        <td>
+                            <div style="display:flex;">
+                                <a href="~/Admin/Product/Edit/@item.ProductID" class="btn btn-success" style="margin-right:5%;">Sửa</a>
+                                @Ajax.ActionLink("Xóa", "Delete", new { @id = item.ProductID }, new AjaxOptions
+                           {
+                               Confirm = "Bạn có muốn xóa bản ghi này?",
+                               OnComplete = "$('row_" + @item.ProductID + "').remove()",
+                               OnSuccess="window.location.reload()",
+                               HttpMethod = "Delete"
+                           },new { @class = "btn btn-danger" })
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, @searchString = @ViewBag.SearchString }))
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="imagesManage" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Quản lý ảnh</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="imageList">
+
+                </div>
+                <div class="clear"></div>
+                <input type="button" id="btnChooseImage" class="btn btn-primary" value="Chọn ảnh" />
+                <input type="hidden" id="hidProductID" value="0" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnSaveImages">Lưu</button>
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>

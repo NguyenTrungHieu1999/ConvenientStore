@@ -1,0 +1,142 @@
+﻿@model List<Models.EF.Bill>
+@{
+    ViewBag.Title = "Xuất excel";
+    Layout = null;
+    var user = (List<Models.EF.User>)ViewBag.Name;
+}
+<title>Xuất hóa đơn file excel</title>
+<link href="~/Asset/Admin/css/sb-admin-2.min.css" rel="stylesheet" />
+<style>
+
+
+    .tableStyle {
+        table-layout:fixed;
+        border: none;
+        width: 100%;
+    }
+
+        .tableStyle th {
+            background-color: #cad8fa;
+            padding: 5px;
+        }
+
+        .tableStyle td {
+            background-color: #f0e7da;
+            padding: 5px;
+        }
+</style>
+@using (Html.BeginForm("ExportToExcel", "Export", FormMethod.Post))
+{
+
+    <br />
+    <br />
+    <h2 style="text-align:center;">
+        Xuất hóa đơn ra file excel
+    </h2>
+    <br />
+    <table class="tableStyle">
+        <tr>
+            <th>
+                Mã hóa đơn
+            </th>
+            <th>
+                Tên khách hàng
+            </th>
+            <th>
+                Ngày mua
+            </th>
+            <th>
+                Tổng tiền
+            </th>
+            <th>
+                Tình trạng
+            </th>
+            <th>
+                Địa chỉ
+            </th>
+            <th>
+                Số thẻ tín dụng
+            </th>
+        </tr>
+        @foreach (var item in Model)
+        {
+
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.BillID)
+                </td>
+                @foreach (var name in user)
+                {
+                    if (item.UserID == name.UserID)
+                    {
+                        <td>
+                            @Html.DisplayFor(m => name.Name)
+                        </td>
+                    }
+                }
+                <td>
+                    @Html.DisplayFor(m => item.CreateDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.TotalMoney)
+                </td>
+                @{
+                    switch (item.Status)
+                    {
+                        case 0:
+                            {
+                                <td>
+                                    Chờ xác nhận
+                                </td>
+                            }
+                            break;
+                        case 1:
+                            {
+                                <td>
+                                    Chờ lấy hàng
+                                </td>
+                            }
+                            break;
+                        case 2:
+                            {
+                                <td>
+                                    Đang giao
+                                </td>
+                            }
+                            break;
+                        case 3:
+                            {
+                                <td>
+                                    Đã giao
+                                </td>
+                            }
+                            break;
+                        case 4:
+                            {
+                                <td>
+                                    Đã hủy
+                                </td>
+                            }
+                            break;
+                        case 5:
+                            {
+                                <td>
+                                    Trả hàng/ Hoàn tiền
+                                </td>
+                            }
+                            break;
+
+                    }
+                }
+                <td>
+                    @Html.DisplayFor(m => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.CreditCard)
+                </td>
+            </tr>
+        }
+    </table>
+    <a style="margin-top:1%;" class="btn btn-success" href="~/Admin/Home/Index">Về trang chủ quản trị</a>
+    <input style="position:absolute; right:0%; margin-top:1%;" type="submit" value="Xuất ra file excel" class="btn btn-success" />
+}

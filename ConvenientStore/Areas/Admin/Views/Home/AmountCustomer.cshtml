@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "Tổng số lượng khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Asset/Admin/vendor/chart.js/Chart.min.js"></script>
+<!-- Pie Chart -->
+<div class="">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <p class="m-0 font-weight-bold text-primary">Tồng số khách hàng: @ViewBag.Sum khách hàng</p>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">Tùy chọn</div>
+                    <a class="dropdown-item" href="/Admin/Home/AmountProduct">Làm mới</a>
+                    @*<a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>*@
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-area">
+                <canvas id="myChart" width="700px" height="200px"></canvas>
+            </div>
+            @*<div class="mt-4 small">
+                @for (int i = 0; i < name.Count; i++)
+                {
+                    <div class="mr-2">
+                        <i class="fas fa-circle" style="color:@color[i]"></i> @name[i]: @quantity[i]
+                    </div>
+                }
+            </div>*@
+        </div>
+    </div>
+</div>
+<script>
+    window.onload = function () {
+        // Pie Chart Example
+        var cusArray =@Html.Raw(Json.Encode(ViewBag.Customer));
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [
+                    {
+                        label: "Số khách hàng:",
+                        backgroundColor: ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#2E2B5F", "#8B00FF", "#FF0000", "#FF7F00", "#FFFF00", "#00FF00","#0000FF"],
+                        data: cusArray
+                    }
+                ]
+            },
+            options: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Số lượng khách hàng mỗi tháng'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+    }
+</script>

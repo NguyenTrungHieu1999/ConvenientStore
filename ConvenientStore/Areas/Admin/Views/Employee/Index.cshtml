@@ -1,0 +1,78 @@
+﻿@model PagedList.IPagedList<Models.ViewModel.EmployeeViewModel>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Danh sách nhân viên";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách nhân viên</h6>
+    </div>
+    <div class="card-body">
+        <div style="float:right;">
+            <a href="~/Admin/Employee/Create" class="btn btn-primary">Thêm nhân viên</a>
+        </div>
+        @using (Html.BeginForm("Index", "Employee", FormMethod.Get))
+        {
+            <div>
+                <input class="form-control" style="width:50%; display:inline;" type="text" value="@ViewBag.SearchString" name="searchString" placeholder="Tìm kiếm tên nhân viên"/>
+                <button class="btn btn-success" type="submit">Tìm kiếm</button>
+            </div>
+        }
+        <br />
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Giới tính</th>
+                        <th>Lương</th>
+                        <th>Chức vụ</th>
+                        <th>#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>@item.Name</td>
+                        @if (item.Sex == true)
+                        {
+                            <td>Nam</td>
+                        }
+                        else
+                        {
+                            <td>Nữ</td>
+                        }
+                        <td>@item.Salary<sup>đ</sup></td>
+                        @if (item.GroupID == "EMP")
+                        {
+                            <td>Nhân viên</td>
+                        }
+                        else if (item.GroupID == "ADMIN")
+                        {
+                            <td>Người quản trị</td>
+                        }
+                        <td id="row_@item.ID">
+                            <div style="display:flex;">
+                                <a href="~/Admin/Employee/Edit/@item.ID" class="btn btn-success" style="margin-right:5%;">Sửa</a>
+                                @Ajax.ActionLink("Xóa","Delete", new { @id=item.ID},new AjaxOptions
+                       {
+                           Confirm="Bạn có muốn xóa bản ghi này?",
+                           OnComplete="$('row_"+@item.ID+"').remove()",
+                           OnSuccess = "window.location.reload()",
+                           HttpMethod ="Delete"
+                       },new { @class = "btn btn-danger" })
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page ,@searchString = @ViewBag.SearchString }))
+        </div>
+    </div>
+</div>

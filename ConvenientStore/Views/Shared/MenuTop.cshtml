@@ -1,0 +1,128 @@
+﻿
+@{ 
+    Layout = null;
+    var session = (UserLogin)Session[ConvenientStore.Common.CommonConstants.USER_SESSION];
+    var notification = (List<Models.EF.Notification>)ViewBag.Notification;
+}
+<style>
+    hr {
+        border: 0;
+        clear: both;
+        display: block;
+        width: 96%;
+        background-color: #FFFF00;
+        height: 1px;
+    }
+</style>
+@*Chưa đăng nhập*@
+@if (session == null)
+{
+<ul>
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" style=""><span><i class="fa fa-bell" aria-hidden="true"></i><span class="badge badge-danger badge-counter">@notification.Count</span><b class="caret"></b></span></a>
+        <ul class="dropdown-menu" style="min-width:400px; padding:10%;">
+            <div class="row">
+                <div>
+                    <ul class="multi-column-dropdown">
+                        @foreach (var item in notification)
+                        {
+                            if (item.Show)
+                            {
+                                <li class="noti">@item.ContentNotification</li>
+                            }
+                            <hr />
+                            <div class="clearfix"></div>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </ul>
+    </li>
+    <li><a href="/Login/Login"><i class="fa fa-user" aria-hidden="true"></i>Đăng nhập</a></li>
+    <li><a href="/Login/Register"><i class="fa fa-file" aria-hidden="true"></i>Đăng ký</a></li>
+    @*@foreach (var item in Model)
+        {
+            if (item.Text != "Tài khoản")
+            {
+                <li><a href="@item.Link"><i class="fa fa-heart" aria-hidden="true" target="@item.Target"></i>@item.Text</a></li>
+            }
+        }*@
+</ul>
+}
+@*Đã đăng nhập*@
+else
+{
+<ul>
+    @*@foreach (var item in Model)
+        {
+            if (item.Text == "Đăng nhập")
+            {
+
+            }
+            else if (item.Text == "Tạo tài khoản")
+            {
+
+            }
+            else if (item.Text == "Tài khoản")
+            {
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle  hyper" data-toggle="dropdown"><span>@item.Text<b class="caret"></b></span></a>
+                    <ul class="dropdown-menu">
+                        <div class="row">
+                            <div class="">
+                                <ul class="multi-column-dropdown">
+                                    <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Thông tin tài khoản</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </ul>
+                </li>
+            }
+            else
+            {
+                <li><a href="@item.Link"><i class="fa fa-heart" aria-hidden="true" target="@item.Target"></i>@item.Text</a></li>
+            }   
+        }*@
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" style=""><span><i class="fa fa-bell" aria-hidden="true"></i><span class="badge badge-danger badge-counter">@notification.Count</span><b class="caret"></b></span></a>
+        <ul class="dropdown-menu" style="min-width:400px; padding:10%;">
+            <div class="row">
+                <div>
+                    <ul class="multi-column-dropdown">
+                        @foreach (var item in notification)
+                        {
+                            if (item.Show)
+                            {
+                                <li class="noti">@Html.Raw(item.ContentNotification)</li>
+                            }
+                            <hr />
+                        }
+                    </ul>
+                </div>
+            </div>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle  hyper" data-toggle="dropdown" style=""><span>Tài khoản<b class="caret"></b></span></a>
+        <ul class="dropdown-menu">
+            <div class="row">
+                <div class="">
+                    <ul class="multi-column-dropdown">
+                        @{
+                            if (session.groupID == "ADMIN" || session.groupID == "EMP")
+                            {
+                                <li><a href="/Admin/Home/Index"><i class="fa fa-angle-right" aria-hidden="true"></i>Về trang chủ quản trị</a></li>
+                            }
+                        }
+                        <li><a href="/tai-khoan/@session.userID"><i class="fa fa-angle-right" aria-hidden="true"></i>Thông tin tài khoản</a></li>
+                        <li><a href="/san-pham/san-pham-yeu-thich"><i class="fa fa-angle-right" aria-hidden="true"></i>Sản phẩm yêu thích</a></li>
+                        <li><a href="/san-pham/san-pham-da-xem"><i class="fa fa-angle-right" aria-hidden="true"></i>Sản phẩm đã xem</a></li>
+                        <li><a href="/don-hang"><i class="fa fa-angle-right" aria-hidden="true"></i>Đơn hàng của tôi</a></li>
+                    </ul>
+                </div>
+            </div>
+        </ul>
+    </li>
+    <li><i class="fa fa-heart" aria-hidden="true" style="color:#FAB005"></i>@Html.ActionLink("Đăng xuất", "Logout", "Login")</li>
+</ul>
+}

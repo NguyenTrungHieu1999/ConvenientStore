@@ -1,0 +1,51 @@
+﻿@model PagedList.IPagedList<Models.EF.BillDetail>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Chi tiết hóa đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var product = (List<Models.EF.Product>)ViewBag.Product;
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách chi tiết hóa đơn</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Mã hóa đơn</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Ảnh sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>@item.BillID</td>
+                        @foreach (var pro in product)
+                        {
+                            if (pro.ProductID == item.ProductID)
+                            {
+                                <td>@pro.Name</td>
+                                <td align="center">
+                                    <img src="@pro.Image" alt="Ảnh minh họa sản phẩm" width="50px" height="50px" />
+                                </td>
+                            }
+                        }
+                        <td>@item.Quantity</td>
+                        <td>@item.Price</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, @seachString = @ViewBag.SearchString }))
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>

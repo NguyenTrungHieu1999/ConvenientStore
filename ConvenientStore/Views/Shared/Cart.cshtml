@@ -1,0 +1,4 @@
+﻿@model List<ConvenientStore.Models.CartModel>
+<div class="cart">
+    <a href="/Cart/Index"><i class="fa fa-shopping-cart my-cart-icon"><span class="badge">@Model.Count()</span></i> sản phẩm @*- @(Model.Sum(x=>x.Product.Price**@</a>
+</div>

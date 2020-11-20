@@ -1,0 +1,50 @@
+﻿@model Models.EF.Notification
+
+@{
+    ViewBag.Title = "Sửa thông báo";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section jsFooter{
+    <script>
+        var editor = CKEDITOR.replace('txtContent', {
+            customConfig: '/Asset/Admin/js/plugins/ckeditor/article.js',
+        });
+    </script>
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Sửa thông báo</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.NotiID)
+
+        <div class="form-group">
+            <strong class="control-label col-md-2">Nội dung thông báo</strong>
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.ContentNotification, new { htmlAttributes = new { @class = "form-control" }, id = "txtContent" })
+                @Html.ValidationMessageFor(model => model.ContentNotification, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <strong class="control-label col-md-2">Hiển thị</strong>
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.DropDownListFor(model => model.Show, new List<SelectListItem>{
+                                                                new SelectListItem{Text="Hiển thị", Value="True",Selected=true},
+                                                                new SelectListItem{Text="Ẩn", Value="False"}})
+                    @Html.ValidationMessageFor(model => model.Show, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Lưu"/>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,80 @@
+﻿@model List<Models.ViewModel.OrderViewModel>
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+    Layout = null;
+    var qrcode = "";
+    if(ViewBag.UserName!=null && Model!=null)
+    {
+        qrcode = "Ten-khach-hang: " + ConvenientStore.Areas.Admin.Controllers.ProductController.RemoveSign4VietnameseString(ViewBag.UserName) +
+    "\n" + "Ten-san-pham:\n";
+        foreach (var item in Model)
+        {
+            qrcode = qrcode + ConvenientStore.Areas.Admin.Controllers.ProductController.RemoveSign4VietnameseString(item.name) + "\n";
+        }
+    }
+    else
+    {
+        qrcode = "Da co loi xay ra";
+    }
+}
+<title>@ViewBag.Title</title>
+<link href="~/Asset/User/css/paymentsuccess.css" rel="stylesheet" />
+@*<div id="container">
+    <div id="success-box">
+        <div class="dot"></div>
+        <div class="dot two"></div>
+        <div class="face">
+            <div class="eye"></div>
+            <div class="eye right"></div>
+            <div class="mouth happy"></div>
+        </div>
+        <div class="shadow scale"></div>
+        <div class="message"><h1 class="alert">Đặt hàng thành công!</h1><p>Một tin nhắn chứa đơn hàng sẽ được gửi đến email của bạn</p></div>
+        <a class="button-box green" href="/">Tiếp tục mua sắm</a>
+    </div>
+    <div>
+        <img src="@Url.Action("RenderQRcode", "Order",new {code=qrcode})" />
+    </div>
+    <div id="error-box">
+        <div class="dot"></div>
+        <div class="dot two"></div>
+        <div class="face2">
+            <div class="eye"></div>
+            <div class="eye right"></div>
+            <div class="mouth sad"></div>
+        </div>
+        <div class="shadow move"></div>
+        <div class="message">        <img class="message" src="@Url.Action("RenderQRcode", "Order",new {code=qrcode})" /></div>
+        <button class="button-box"><h1 class="red">try again</h1></button>
+    </div>
+</div>*@
+<div id="container">
+    <div id="success-box">
+        <div class="dot"></div>
+        <div class="dot two"></div>
+        <div class="face">
+            <div class="eye"></div>
+            <div class="eye right"></div>
+            <div class="mouth happy"></div>
+        </div>
+        <div class="shadow scale"></div>
+        <div class="message"><h1 class="alert">Đặt hàng thành công!</h1><p>Một tin nhắn chứa đơn hàng sẽ được gửi đến email của bạn</p></div>
+        <a style="text-decoration:none;" class="button-box" href="/"><h1 style="color:#4ec07d;">Trang chủ</h1></a>
+    </div>
+    <div id="error-box">
+        <div class="dot"></div>
+        <div class="dot two"></div>
+        @*<div class="face2">
+            <div class="eye"></div>
+            <div class="eye right"></div>
+            <div class="mouth sad"></div>
+        </div>*@
+        @*<div class="shadow move"></div>*@
+        <img src="@Url.Action("RenderQRcode", "Cart",new {code=qrcode})" />
+        <button class="button-box"><h1 class="red" style="padding-top: 5px;">Mã QR mua hàng</h1></button>
+    </div>
+</div>
+
+<footer>
+    <p>made by <a href="https://codepen.io/juliepark"> julie</a> ♡
+</footer>

@@ -1,0 +1,130 @@
+﻿@using System.Globalization
+@{
+    ViewBag.Title = "Tổng quan doanh thu";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var bill = (List<Models.EF.Bill>)ViewBag.Bill;
+    decimal? month = 0;
+    decimal? year = 0;
+    decimal? date = 0;
+    List<decimal?> revenue = (List<decimal?>)ViewBag.Revenue;
+}
+<!-- Content Row -->
+<div class="row">
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Doanh thu (Tháng @DateTime.Today.Month)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @foreach (var item in bill)
+                            {
+                                if (item.CreateDate.Value.Month == DateTime.Today.Month)
+                                {
+                                    month = month + item.TotalMoney;
+                                }
+                            }
+                            @string.Format(new CultureInfo("vi-VN"), "{0:#,##0}", month)
+                            <sup>đ</sup>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Earnings (Year) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Doanh thu (Theo năm)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @foreach (var item in bill)
+                            {
+                                year = year + item.TotalMoney;
+                            }
+                            @string.Format(new CultureInfo("vi-VN"), "{0:#,##0}", year)
+                            <sup>đ</sup>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Earnings (Daily) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Doanh thu hôm nay</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @foreach (var item in bill)
+                            {
+                                if (item.CreateDate.Value.Date == DateTime.Today.Date)
+                                {
+                                    date = date + item.TotalMoney;
+                                }
+                            }
+                            @string.Format(new CultureInfo("vi-VN"), "{0:#,##0}", date)
+                            <sup>đ</sup>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bill Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tổng hóa đơn</div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@bill.Count</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bill Target Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Mục tiêu</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@bill.Count/100 hóa đơn</div>
+                        <div class="col">
+                            <div class="progress progress-sm mr-2">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: @bill.Count%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="10"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-bullseye fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Content Row -->

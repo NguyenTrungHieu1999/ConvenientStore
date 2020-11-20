@@ -1,0 +1,67 @@
+﻿@model PagedList.IPagedList<Models.EF.Notification>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Danh sách thông báo";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section jsFooter{
+    <script src="~/Asset/Admin/js/controller/notificationController.js"></script>
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách thông báo</h6>
+    </div>
+    <div class="card-body">
+        <div style="float:right;">
+            <a href="~/Admin/Notification/Create" class="btn btn-primary">Thêm thông báo</a>
+        </div>
+        @using (Html.BeginForm("Index", "Notification", FormMethod.Get))
+        {
+            <div>
+                <input class="form-control" style="width:50%; display:inline;" type="text" value="@ViewBag.SearchString" name="searchString" placeholder="Tìm kiếm thông báo"/>
+                <button class="btn btn-success" type="submit">Tìm kiếm</button>
+            </div>
+        }
+        <br />
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Nội dung thông báo</th>
+                        <th>Người tạo</th>
+                        <th>Người sửa</th>
+                        <th>Hiển thị</th>
+                        <th>#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr id="row_@item.NotiID">
+                            <td>@Html.Raw(item.ContentNotification)</td>
+                            <td>@item.CreateBy</td>
+                            <td>@item.ModifiedBy</td>
+                            <td><a href="#" class="btn-notiactive" data-id="@item.NotiID">@Html.Raw(item.Show ? "Hiển thị" : "Ẩn")</a></td>
+                            <td>
+                                <div style="display:flex;">
+                                    <a href="~/Admin/Notification/Edit/@item.NotiID" class="btn btn-success" style="margin-right:5%;">Sửa</a>
+                                    @Ajax.ActionLink("Xóa", "Delete", new { @id = item.NotiID }, new AjaxOptions
+                           {
+                               Confirm = "Bạn có muốn xóa bản ghi này?",
+                               OnComplete = "$('row_" + @item.NotiID + "').remove()",
+                               OnSuccess="window.location.reload()",
+                               HttpMethod = "Delete"
+                           },new { @class = "btn btn-danger" })
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, @searchString = @ViewBag.SearchString }))
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>

@@ -1,0 +1,301 @@
+﻿@model Models.EF.ProductRate
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var session = (UserLogin)Session[ConvenientStore.Common.CommonConstants.USER_SESSION];
+    var product = (Models.EF.Product)ViewBag.Product;
+    var type = (List<Models.EF.Product>)ViewBag.Type;
+    var user = (List<Models.EF.User>)ViewBag.User;
+    var rateList = (List<Models.EF.ProductRate>)ViewBag.Rating;
+}
+<link href="~/Asset/User/js/rateyo/jquery.rateyo.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+<script src="~/Asset/User/js/rateyo/jquery.rateyo.min.js"></script>
+<script>
+    $(function () {
+
+        $("#rateYo").rateYo({
+            rating: 5,
+            numStars: 5,
+            maxValue: 5,
+            //halfStar: true,
+            onChange: function (rating, rateYoInstance) {
+                $('#rating').val(rating);
+            }
+        });
+    });
+</script>
+@section jsFooter{
+    <script src="/Asset/User/js/controller/commentController.js"></script>
+}
+<style>
+    .single-w3agile{
+        border:unset;
+    }
+    /*.col-md-6 {
+        width: 100%;
+    }*/
+</style>
+<body>
+    <!---->
+    <!--banner-->
+    <input type="hidden" id="session" value="@ViewBag.Session"/>
+    <div class="banner-top">
+        <div class="container">
+            <h3>Sản phẩm</h3>
+            <h4><a href="#">Trang chủ</a><label>/</label>Sản phẩm</h4>
+            <div class="clearfix"> </div>
+        </div>
+    </div>
+    <div class="single">
+        <div class="container">
+            <div class="single-top-main">
+                <div class="col-md-5 single-top">
+                    <div class="single-w3agile">
+                        <div id="picture-frame">
+                            <img src="@product.Image" data-src="" alt="" class="img-responsive" />
+                        </div>
+                        <script src="~/Asset/User/js/jquery.zoomtoo.js"></script>
+                        <script>
+                            $(function () {
+                                $("#picture-frame").zoomToo({
+                                    magnify: 1
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="col-md-7 single-top-left ">
+                    <div class="single-right">
+                        <h3>@product.Name</h3>
+                        <div class="pr-single">
+                            <p class="reduced ">Gía tiền: <del>@product.Price<sup>đ</sup></del>@product.PromotionPrice<sup>đ</sup></p>
+                        </div>
+                        <script>
+                            $(function () {
+
+                                $('#ratingoverall').rateYo({
+                                    rating: @product.RateStar,
+                                    readOnly: true,
+                                });
+
+                            });
+                        </script>
+                        <div id="ratingoverall"></div>
+                        <br />
+                        @if (ViewBag.BarcodeImage != null)
+                        {
+                            <span>Mã sản phẩm:<img src="@ViewBag.BarcodeImage" alt="" /></span>
+                        }
+                        @*<span>Mã sản phẩm:<img src="@Url.Action("RenderBarcode", "Product",new {code=product.BarCode})" /></span>*@
+                        <p class="in-pa">@Html.Raw(product.Detail)</p>
+                        @*<div class="row">
+            <div class="col-md-8">
+                <img src="@Url.Action("RenderQRcode", "Product",new {code=product.BarCode})" /><hr />
+
+            </div>
+        </div>*@
+                        <ul class="social-top">
+                            <li><a href="#" class="icon facebook"><i class="fa fa-facebook" aria-hidden="true"></i><span></span></a></li>
+                            <li><a href="#" class="icon twitter"><i class="fa fa-twitter" aria-hidden="true"></i><span></span></a></li>
+                            <li><a href="#" class="icon pinterest"><i class="fa fa-pinterest-p" aria-hidden="true"></i><span></span></a></li>
+                            <li><a href="#" class="icon dribbble"><i class="fa fa-dribbble" aria-hidden="true"></i><span></span></a></li>
+                            <li><a href="/Product/Add?id=@product.ProductID" id="favorite" class="icon dribbble"><i class="fa fa-heart" aria-hidden="true" style="color:red;"></i><span></span></a></li>
+                        </ul>
+                        <div class="add">
+                            @*<a href=@Url.Action("AddCart", "Cart", new { productID = product.ProductID, quantity = 1 })>Thêm vào giỏ hàng</a>*@
+                            <h4><a class="btn btn-success addcart" href="/Cart/AddCart?productID=@product.ProductID&quantity=1">Thêm vào giỏ hàng</a></h4>
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                </div>
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+    </div>
+    @if (rateList != null)
+    {
+        <div class="container">
+            <div class="advantages">
+                <div class="spec ">
+                    <h3>Đánh giá và bình luận</h3>
+                    <div class="ser-t">
+                        <b></b>
+                        <span><i></i></span>
+                        <b class="line"></b>
+                    </div>
+                </div>
+                @foreach (var item in rateList)
+                {
+                    <div class="col-md-6 advantages-left" style="width:100%;">
+                        <div style="background-color:white; padding:2%;">
+                            @{ int i = 1;}
+                            @foreach (var name in user)
+                            {
+                                if (item.UserID == name.UserID)
+                                {
+                                    <strong>@name.Name</strong>
+                                    <br />
+                                    <script>
+                                        $(function () {
+
+                                            $('#@("rating" + i)').rateYo({
+                                                rating: @item.RateStar,
+                                                readOnly: true,
+                                            });
+
+                                        });
+                                    </script>
+                                    <div id="@("rating" + i)"></div>
+                                    <br />
+                                    <p>@item.CommentContent</p>
+                                    <hr />
+                                }
+                                i++;
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    <br />
+    @if (session == null)
+    {
+        <div class="container">
+            <div class="col-md-6 advantages-left" style="padding:3%;">
+                <a href="/Login/Login" class="btn btn-danger">Hãy đăng nhập để bình luận</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container">
+            <div class="col-md-6 advantages-left" style="width:100%; padding:3%;">
+                @using (Html.BeginForm("SendRate", "Product", FormMethod.Post))
+                {
+                    <table cellpadding="2" cellspacing="2">
+                        <tr>
+                            <td valign="top">Đánh giá</td>
+                            <td>
+                                <div id="rateYo"></div>
+                                <input type="hidden" id="rating" name="rating" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top">Bình luận</td>
+                            <td style="width:80%;">@Html.TextAreaFor(Model => Model.CommentContent,10,80, new { htmlAttributes = new { @class = "form-control" } })</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td><input class="btn btn-success" type="submit" value="Gửi" style="float:right;"/></td>
+                            @Html.HiddenFor(model => model.ProductID)
+                        </tr>
+                    </table>
+                }
+            </div>
+        </div>
+    }
+    <div class="content-top offer-w3agile">
+        <div class="container ">
+            <div class="spec ">
+                <h3>Sản phẩm cùng loại</h3>
+                <div class="ser-t">
+                    <b></b>
+                    <span><i></i></span>
+                    <b class="line"></b>
+                </div>
+            </div>
+            <div class=" con-w3l wthree-of">
+                @foreach (var item in type)
+                {
+                    int i = 1;
+                    var url = "/san-pham/chi-tiet/" + item.MetaTitle + "/" + item.ProductID;
+                    <div class="col-md-3 pro-1">
+                        <div class="col-m">
+                            <a href="#" data-toggle="modal" data-target="#@item.PopupID" class="offer-img">
+                                <img style="height:96px; width:96px;" src="@item.Image" class="img-responsive" alt="Ảnh minh họa">
+                                <div class="offer"><p><span>Khuyên dùng</span></p></div>
+                            </a>
+                            <div class="mid-1">
+                                <div class="women">
+                                    @if (ViewBag.Watched == null)
+                                    {
+                                        <h6><a href="@url">@item.Name</a></h6>
+                                    }
+                                    else
+                                    {
+                                        <h6><a href="/Product/AddWatchedProduct?id=@item.ProductID">@item.Name</a></h6>
+                                    }
+                                </div>
+                                <div class="mid-2">
+                                    <p><label>@item.Price<sup>đ</sup></label><em class="item_price">@item.PromotionPrice<sup>đ</sup></em></p>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="add">
+                                    <h4><a class="btn btn-success addcart" href="/Cart/AddCart?productID=@item.ProductID&quantity=1">Thêm vào giỏ hàng</a></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    i++;
+                }
+            </div>
+        </div>
+
+    </div>
+    <!--Pop Up-->
+    @foreach (var item in type)
+    {
+        <div class="modal fade" id="@item.PopupID" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content modal-info">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body modal-spa">
+                        <div class="col-md-5 span-2">
+                            <div class="item">
+                                <img src="@item.Image" class="img-responsive" alt="">
+                            </div>
+                        </div>
+                        <div class="col-md-7 span-1 ">
+                            <h3>@item.Name</h3>
+                            <p class="in-para">@item.Descriptions</p>
+                            <div class="price_single">
+                                <span class="reducedfrom ">Gía tiền:<del>@item.Price<sup>đ</sup></del> @item.PromotionPrice<sup>đ</sup></span>
+
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="add">
+                                <h4><a class="btn btn-success addcart" href="/Cart/AddCart?productID=@item.ProductID&quantity=1">Thêm vào giỏ hàng</a></h4>
+                            </div>
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</body>
+<script>
+    $("#favorite").off('click').on('click', function (e) {
+        var str = "null";
+        if ($("#session").val() == str) {
+            alert("Vui lòng đăng nhập");
+        }
+        else {
+            alert("Đã thêm vào sản phẩm yêu thích");
+        }
+    });
+    $(".addcart").off('click').on('click', function (e) {
+        var str = "null";
+        if ($("#session").val() == str) {
+            alert("Vui lòng đăng nhập");
+        }
+        else {
+            alert("Thêm vào giỏ hàng thành công");
+        }
+    });
+</script>

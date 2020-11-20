@@ -1,0 +1,25 @@
+﻿
+@{
+    var category = (List<Models.EF.ProductCategory>)ViewBag.SubMenu;
+}
+<style>
+    .dropdown-menu {
+        text-align: left;
+    }
+
+    .multi-column-dropdown {
+        margin-left: 10%;
+    }
+</style>
+<li class="active"><a href="/" class="hyper" target="_self"><span>Trang chủ</span></a></li>
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle  hyper" data-toggle="dropdown"><span>Sản phẩm<b class="caret"></b></span></a>
+    <ul class="dropdown-menu">
+        @foreach (var cate in category)
+        {
+            var url = "/san-pham/" + cate.MetaTitle + "/" + cate.CateID;
+            <li><a href="@url">@cate.Name</a></li>
+        }
+    </ul>
+</li>
+

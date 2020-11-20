@@ -1,0 +1,74 @@
+﻿@model Models.EF.ProductCategory
+
+@{
+    ViewBag.Title = "Tạo danh mục sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section jsFooter{
+    <script>
+        $('#btnSelectImage').on('click', function (e) {
+            e.preventDefault();
+            var finder = new CKFinder();
+            finder.selectActionFunction = function (url) {
+                $('#txtImage').val(url);
+            };
+            finder.popup();
+        })
+        var editor = CKEDITOR.replace('txtContent', {
+            customConfig: '/Asset/Admin/js/plugins/ckeditor/article.js',
+        });
+    </script>
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Tạo danh mục sản phẩm</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <div class="control-label col-md-2" style="max-width:none;">Tên danh mục sản phẩm</div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="control-label col-md-2" style="max-width:none;">Hiển thị sau</div>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.DisplayOrder, null, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DisplayOrder, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="control-label col-md-2" style="max-width:none;">Tình trạng</div>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Status, new List<SelectListItem>{
+                                                            new SelectListItem{Text="Còn hàng", Value="True",Selected=true},
+                                                            new SelectListItem{Text="Hết hàng", Value="False"}})
+                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="control-label col-md-2" style="max-width:none;">Hiển thị ở trang chủ</div>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ShowOnHome, new List<SelectListItem>{
+                                                            new SelectListItem{Text="Hiển thị", Value="True",Selected=true},
+                                                            new SelectListItem{Text="Không hiển thị", Value="False"}})
+                @Html.ValidationMessageFor(model => model.ShowOnHome, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Tạo danh mục sản phẩm" class="btn btn-success"/>
+            </div>
+        </div>
+    </div>
+}
+

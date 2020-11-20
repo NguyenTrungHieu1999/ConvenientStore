@@ -1,0 +1,138 @@
+﻿@model List<ConvenientStore.Models.CartModel>
+@{
+    ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
+<link href="~/Asset/User/css/billanimation.css" rel="stylesheet" />
+@section jsFooter{
+    <script src="/Asset/User/js/controller/cartController.js"></script>
+}
+<style>
+    hr {
+        border: 0;
+        clear: both;
+        display: block;
+        width: 96%;
+        background-color: #000000;
+        height: 1px;
+    }
+
+    .block_container {
+        display: flex;
+        margin: 10px 50px;
+    }
+
+    .block1 {
+        width: 75%;
+        border-style: solid;
+        background-color: white;
+        border-width: 1px;
+        border-color: white;
+    }
+
+    .block2 {
+        width: 30%;
+        border-style: solid;
+        background-color: white;
+        border-width: 1px;
+        border-color: gray;
+    }
+    .center {
+        position:relative;
+        width: 100%;
+        border: 3px solid green;
+    }
+    .quantity{
+        margin:unset;
+    }
+</style>
+<div class="banner-top">
+    <div class="container">
+        <h3>Giỏ hàng</h3>
+        <h4><a href="#">Trang chủ</a><label>/</label>Giỏ hàng</h4>
+        <div class="clearfix"> </div>
+    </div>
+</div>
+<div class="block_container">
+    <div class="block1">
+        @if (Model.Count > 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>Hình ảnh</td>
+                        <td>Tên sản phẩm</td>
+                        <td>Số lượng</td>
+                        <td>Đơn gía</td>
+                        <td>Thành tiền</td>
+                        <td>Tùy chọn</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><img src="@item.Product.Image" style="width:80px; height:80px;" alt="Ảnh minh họa" /></td>
+                            <td>@item.Product.Name</td>
+                            <td><input type="number" class="quantity" data-id="@item.Product.ProductID" value="@item.Quantity"></td>
+                            <td>@item.Product.PromotionPrice</td>
+                            <td>@(item.Product.PromotionPrice.GetValueOrDefault(0) * item.Quantity)</td>
+                            <td><a href="#" data-id="@item.Product.ProductID" class="btn btn-danger btn-delete">Xóa</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="alert alert-danger" style="text-align:center; font-size: 24px;">Chưa có sản phẩm nào trong giỏ hàng</p>
+        }
+        <div>
+            <button id="btnContinue" class="btn btn-success">Tiếp tục mua sắm</button>
+            <button id="btnUpdate" class="btn btn-success">Cập nhật giỏ hàng</button>
+            <button id="btnDeleteAll" class="btn btn-success">Xóa giỏ hàng</button>
+        </div>
+    </div>
+    <div class="block2">
+        <div class="paypal">
+
+            <div class="paypal__header">
+                <div class="paypal__header-info">
+                    <h1 class="paypal__username">Xin chào quý khách</h1>
+                    <span class="paypal__help-text">Giỏ hàng của bạn:</span>
+                </div>
+            </div>
+            <div class="paypal__cart">
+                <h2 class="paypal__cart-title">Giỏ hàng</h2>
+                <ul class="paypal__cart-list">
+                    @foreach (var item in Model)
+                    {
+                        <li class="paypal__cart-item">
+                            <span class="paypal__index">@item.Quantity</span>x
+                            <span class="paypal__item-name">@item.Product.Name</span>
+                            <span class="paypal__item-price">@(item.Quantity * item.Product.PromotionPrice.GetValueOrDefault(0))<sup>đ</sup></span>
+                        </li>
+                    }
+                    <li class="paypal__cart-item">
+                        <span class="paypal__cart-total">Tổng cộng</span>
+                        @{
+                            decimal sum = 0;
+                            foreach (var item in Model)
+                            {
+                                sum = sum + (item.Quantity * item.Product.PromotionPrice.GetValueOrDefault(0));
+                            }
+                        }
+                        <span class="paypal__item-price">@sum<sup>đ</sup></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="paypal__footer">
+                <button id="btnPayment" class="btn btn-success center">Tiến hành đặt hàng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Asset/User/js/jquery-1.11.1.min.js"></script>
+<script src="~/Asset/User/js/atm.js"></script>

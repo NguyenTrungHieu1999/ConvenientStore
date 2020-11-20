@@ -1,0 +1,130 @@
+﻿@model ConvenientStore.Areas.Admin.Models.Register
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Sign Up";
+}
+@using BotDetect.Web.Mvc;
+<link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl"
+      rel="stylesheet" type="text/css" />
+@{ MvcCaptcha registerCaptcha = new MvcCaptcha("registerCaptcha");}
+<!-- Bootstrap -->
+<!-- Bootstrap DatePicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js" type="text/javascript"></script>
+<!-- Bootstrap DatePicker -->
+<script type="text/javascript">
+    $(function () {
+        $('#txtDate').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            format: "yyyy/mm/dd",
+            language: "tr"
+        });
+    });
+</script>
+<style>
+    .text-danger {
+        color: #e74a3b !important;
+    }
+
+    a.text-danger:hover, a.text-danger:focus {
+        color: #be2617 !important;
+    }
+</style>
+<body>
+    <!--banner-->
+    <div class="banner-top">
+        <div class="container">
+            <h3>Đăng ký</h3>
+            <h4><a href="#">Trang chủ</a><label>/</label>Đăng ký</h4>
+            <div class="clearfix"> </div>
+        </div>
+    </div>
+    <!--login-->
+
+    <div class="login">
+        <div class="main-agileits">
+            <div class="form-w3agile">
+                <h3>Đăng ký</h3>
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                @{ Html.BeginForm("Register", "Login", FormMethod.Post);}
+                Tên tài khoản:
+                <div class="key">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    @Html.TextBoxFor(model => model.UserName, htmlAttributes: new { placeholder = "Tên tài khoản" })
+                    @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                    <div class="clearfix"></div>
+                </div>
+                Email:
+                <div class="key">
+                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                    @Html.TextBoxFor(model => model.Email, new { placeholder = "Email" })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    <div class="clearfix"></div>
+                </div>
+                Mật khẩu:
+                <div class="key">
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                    @Html.PasswordFor(model => model.PassWord, new { @class = "wide" , placeholder = "Mật khẩu" })
+                    @Html.ValidationMessageFor(model => model.PassWord, "", new { @class = "text-danger" })
+                    @*<input type="password" value="Password" name="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" required="">*@
+                    <div class="clearfix"></div>
+                </div>
+                Nhập lại mật khẩu:
+                <div class="key">
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                    @Html.PasswordFor(model => model.ConfirmPassWord, new { @class = "wide" , placeholder = "Nhập lại mật khẩu" })
+                    @Html.ValidationMessageFor(model => model.ConfirmPassWord, "", new { @class = "text-danger" })
+                    @*<input type="password" value="Password" name="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" required="">*@
+                    <div class="clearfix"></div>
+                </div>
+                Họ tên:
+                <div class="key">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    @Html.TextBoxFor(model => model.Name, new { @class = "wide" , placeholder = "Họ tên", autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    @*<input type="password" value="Password" name="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" required="">*@
+                    <div class="clearfix"></div>
+                </div>
+                Ngày sinh:
+                <div>
+                    @Html.TextBoxFor(model => model.DateOfBirth, new { id = "txtDate", @class = "wide", autocomplete="off" })
+                    @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div>
+                    Giới tính:
+                    @Html.DropDownListFor(model => model.Sex, new List<SelectListItem>{
+                                            new SelectListItem{Text="Nam", Value="True",Selected=true},
+                                            new SelectListItem{Text="Nữ", Value="False"}})
+                    @Html.ValidationMessageFor(model => model.Sex, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                Địa chỉ
+                <div class="key">
+                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                    @Html.EditorFor(model => model.Address, new { @class = "wide", placeholder = "Địa chỉ", autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                    @*<input type="password" value="Password" name="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" required="">*@
+                    <div class="clearfix"></div>
+                </div>
+                Số điện thoại
+                <div class="key">
+                    <i class="fa fa-phone-square" aria-hidden="true"></i>
+                    @Html.EditorFor(model => model.Phone, new { @class = "wide", placeholder = "Số điện thoại", autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+                    @*<input type="password" value="Password" name="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" required="">*@
+                    <div class="clearfix"></div>
+                </div>
+                @Html.Captcha(registerCaptcha)
+                @Html.TextBox("CaptchaCode", "", new { autocomplete = "off" })
+                @if (ViewBag.ThongBao != null)
+                {
+                    <p style="color:red; text-align:center; margin-bottom:20px;">@ViewBag.ThongBao</p>
+                }
+                <input type="submit" value="Đăng ký" class="center-block">
+                @{ Html.EndForm();}
+            </div>
+        </div>
+    </div>
+</body>

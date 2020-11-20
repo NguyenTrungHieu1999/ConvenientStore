@@ -1,0 +1,613 @@
+﻿@model PagedList.IPagedList<Models.EF.Bill>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Danh sách hóa đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var user = (List<Models.EF.User>)ViewBag.User;
+    List<Models.EF.Bill> bill = null;
+    var listBill = (List<Models.EF.Bill>)ViewBag.Bill;
+}
+@section jsFooter{
+    <script src="~/Asset/Admin/js/controller/statusController.js"></script>
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách hóa đơn</h6>
+        <h6><a href="~/Admin/Export/Index" class="btn btn-success" style="position:absolute; top:10px; right:1%;">Xuất dữ liệu ra file excel</a></h6>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="tatca-tab" data-toggle="tab" href="#tatca" role="tab" aria-controls="tatca" aria-selected="true">Tất cả</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="choxacnhan-tab" data-toggle="tab" href="#choxacnhan" role="tab" aria-controls="choxacnhan" aria-selected="false">Chờ xác nhận</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="cholayhang-tab" data-toggle="tab" href="#cholayhang" role="tab" aria-controls="cholayhang" aria-selected="false">Chờ lấy hàng</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="danggiao-tab" data-toggle="tab" href="#danggiao" role="tab" aria-controls="danggiao" aria-selected="false">Đang giao</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="dagiao-tab" data-toggle="tab" href="#dagiao" role="tab" aria-controls="dagiao" aria-selected="false">Đã giao</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="dahuy-tab" data-toggle="tab" href="#dahuy" role="tab" aria-controls="dahuy" aria-selected="false">Đã hủy</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="trahang-tab" data-toggle="tab" href="#trahang" role="tab" aria-controls="trahang" aria-selected="false">Trả hàng/Hoàn tiền</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tatca" role="tabpanel" aria-labelledby="tatca-tab">
+                <br />
+                <h6>@Model.Count Đơn hàng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng đơn hàng</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <img src="~/Data/files/nobillimage.jpg" alt="Không có đơn hàng" width="200px" height="200px" style="display:block; margin: 0 auto;" />
+                                        <p style="text-align:center;">Không tìm thấy đơn hàng</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in Model)
+                            {
+                                <tr id="row_@item.BillID">
+                                    <td>@item.BillID</td>
+                                    @foreach (var temp in user)
+                                    {
+                                        if (temp.UserID == item.UserID)
+                                        {
+                                            <td>@temp.Name</td>
+                                            break;
+                                        }
+                                    }
+                                    <td>@item.TotalMoney</td>
+                                    <td>@item.CreateDate</td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <td><a href="#" class="btn-statusactive" data-id="@item.BillID">Chờ xác nhận</a></td>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <td><a href="#" class="btn-statusactive" data-id="@item.BillID">Chờ lấy hàng</a></td>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <td><a href="#" class="btn-statusactive" data-id="@item.BillID">Đang giao </a></td>
+                                    }
+                                    else if (item.Status == 3)
+                                    {
+                                        <td><a href="#" class="btn-statusactive" data-id="@item.BillID">Đã giao </a></td>
+                                    }
+                                    else if (item.Status == 4)
+                                    {
+                                        <td><a href="#" class="btn-statusactive" data-id="@item.BillID">Đã hủy </a></td>
+                                    }
+                                    else
+                                    {
+                                        <td><a href="#" class="btn-statusactive" data-id="@item.BillID">Trả hàng / hoàn tiền </a></td>
+                                    }
+                                    <td>
+                                        <a href="~/Admin/BillDetail/Index?searchString=@item.BillID&page=1&pageSize=2">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, @seachString = @ViewBag.SearchString }))
+                </div>
+            </div>
+            <div class="tab-pane fade" id="choxacnhan" role="tabpanel" aria-labelledby="choxacnhan-tab">
+                @{
+                    bill = new List<Models.EF.Bill>();
+                }
+                @foreach (var item in listBill)
+                {
+                    if (item.Status == 0)
+                    {
+                        bill.Add(item);
+                    }
+                }
+                <br />
+                <h6>@bill.Count Đơn hàng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng đơn hàng</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (bill.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <img src="~/Data/files/nobillimage.jpg" alt="Không có đơn hàng" width="200px" height="200px" style="display:block; margin: 0 auto;" />
+                                        <p style="text-align:center;">Không tìm thấy đơn hàng</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in bill)
+                            {
+                                <tr id="row_@item.BillID">
+                                    <td>@item.BillID</td>
+                                    @foreach (var temp in user)
+                                    {
+                                        if (temp.UserID == item.UserID)
+                                        {
+                                            <td>@temp.Name</td>
+                                            break;
+                                        }
+                                    }
+                                    <td>@item.TotalMoney</td>
+                                    <td>@item.CreateDate</td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <td>Chờ xác nhận</td>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <td>Chờ lấy hàng</td>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <td>Đang giao</td>
+                                    }
+                                    else if (item.Status == 3)
+                                    {
+                                        <td>Đã giao</td>
+                                    }
+                                    else if (item.Status == 4)
+                                    {
+                                        <td>Đã hủy</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Trả hàng/hoàn tiền</td>
+                                    }
+                                    <td>
+                                        <a href="~/Admin/BillDetail/Index?searchString=@item.BillID&page=1&pageSize=2">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="cholayhang" role="tabpanel" aria-labelledby="cholayhang-tab">
+                @{
+                    bill = new List<Models.EF.Bill>();
+                }
+                @foreach (var item in listBill)
+                {
+                    if (item.Status == 1)
+                    {
+                        bill.Add(item);
+                    }
+                }
+                <br />
+                <h6>@bill.Count Đơn hàng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng đơn hàng</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (bill.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <img src="~/Data/files/nobillimage.jpg" alt="Không có đơn hàng" width="200px" height="200px" style="display:block; margin: 0 auto;" />
+                                        <p style="text-align:center;">Không tìm thấy đơn hàng</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in bill)
+                            {
+                                <tr id="row_@item.BillID">
+                                    <td>@item.BillID</td>
+                                    @foreach (var temp in user)
+                                    {
+                                        if (temp.UserID == item.UserID)
+                                        {
+                                            <td>@temp.Name</td>
+                                            break;
+                                        }
+                                    }
+                                    <td>@item.TotalMoney</td>
+                                    <td>@item.CreateDate</td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <td>Chờ xác nhận</td>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <td>Chờ lấy hàng</td>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <td>Đang giao</td>
+                                    }
+                                    else if (item.Status == 3)
+                                    {
+                                        <td>Đã giao</td>
+                                    }
+                                    else if (item.Status == 4)
+                                    {
+                                        <td>Đã hủy</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Trả hàng/hoàn tiền</td>
+                                    }
+                                    <td>
+                                        <a href="~/Admin/BillDetail/Index?searchString=@item.BillID&page=1&pageSize=2">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="danggiao" role="tabpanel" aria-labelledby="danggiao-tab">
+                @{
+                    bill = new List<Models.EF.Bill>();
+                }
+                @foreach (var item in listBill)
+                {
+                    if (item.Status == 2)
+                    {
+                        bill.Add(item);
+                    }
+                }
+                <br />
+                <h6>@bill.Count Đơn hàng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng đơn hàng</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (bill.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <img src="~/Data/files/nobillimage.jpg" alt="Không có đơn hàng" width="200px" height="200px" style="display:block; margin: 0 auto;" />
+                                        <p style="text-align:center;">Không tìm thấy đơn hàng</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in bill)
+                            {
+                                <tr id="row_@item.BillID">
+                                    <td>@item.BillID</td>
+                                    @foreach (var temp in user)
+                                    {
+                                        if (temp.UserID == item.UserID)
+                                        {
+                                            <td>@temp.Name</td>
+                                            break;
+                                        }
+                                    }
+                                    <td>@item.TotalMoney</td>
+                                    <td>@item.CreateDate</td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <td>Chờ xác nhận</td>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <td>Chờ lấy hàng</td>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <td>Đang giao</td>
+                                    }
+                                    else if (item.Status == 3)
+                                    {
+                                        <td>Đã giao</td>
+                                    }
+                                    else if (item.Status == 4)
+                                    {
+                                        <td>Đã hủy</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Trả hàng/hoàn tiền</td>
+                                    }
+                                    <td>
+                                        <a href="~/Admin/BillDetail/Index?searchString=@item.BillID&page=1&pageSize=2">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="dagiao" role="tabpanel" aria-labelledby="dagiao-tab">
+                @{
+                    bill = new List<Models.EF.Bill>();
+                }
+                @foreach (var item in listBill)
+                {
+                    if (item.Status == 3)
+                    {
+                        bill.Add(item);
+                    }
+                }
+                <br />
+                <h6>@bill.Count Đơn hàng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng đơn hàng</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (bill.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <img src="~/Data/files/nobillimage.jpg" alt="Không có đơn hàng" width="200px" height="200px" style="display:block; margin: 0 auto;" />
+                                        <p style="text-align:center;">Không tìm thấy đơn hàng</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in bill)
+                            {
+                                <tr id="row_@item.BillID">
+                                    <td>@item.BillID</td>
+                                    @foreach (var temp in user)
+                                    {
+                                        if (temp.UserID == item.UserID)
+                                        {
+                                            <td>@temp.Name</td>
+                                            break;
+                                        }
+                                    }
+                                    <td>@item.TotalMoney</td>
+                                    <td>@item.CreateDate</td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <td>Chờ xác nhận</td>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <td>Chờ lấy hàng</td>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <td>Đang giao</td>
+                                    }
+                                    else if (item.Status == 3)
+                                    {
+                                        <td>Đã giao</td>
+                                    }
+                                    else if (item.Status == 4)
+                                    {
+                                        <td>Đã hủy</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Trả hàng/hoàn tiền</td>
+                                    }
+                                    <td>
+                                        <a href="~/Admin/BillDetail/Index?searchString=@item.BillID&page=1&pageSize=2">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="dahuy" role="tabpanel" aria-labelledby="dahuy-tab">
+                @{
+                    bill = new List<Models.EF.Bill>();
+                }
+                @foreach (var item in listBill)
+                {
+                    if (item.Status == 4)
+                    {
+                        bill.Add(item);
+                    }
+                }
+                <br />
+                <h6>@bill.Count Đơn hàng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng đơn hàng</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (bill.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <img src="~/Data/files/nobillimage.jpg" alt="Không có đơn hàng" width="200px" height="200px" style="display:block; margin: 0 auto;" />
+                                        <p style="text-align:center;">Không tìm thấy đơn hàng</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in bill)
+                            {
+                                <tr id="row_@item.BillID">
+                                    <td>@item.BillID</td>
+                                    @foreach (var temp in user)
+                                    {
+                                        if (temp.UserID == item.UserID)
+                                        {
+                                            <td>@temp.Name</td>
+                                            break;
+                                        }
+                                    }
+                                    <td>@item.TotalMoney</td>
+                                    <td>@item.CreateDate</td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <td>Chờ xác nhận</td>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <td>Chờ lấy hàng</td>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <td>Đang giao</td>
+                                    }
+                                    else if (item.Status == 3)
+                                    {
+                                        <td>Đã giao</td>
+                                    }
+                                    else if (item.Status == 4)
+                                    {
+                                        <td>Đã hủy</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Trả hàng/hoàn tiền</td>
+                                    }
+                                    <td>
+                                        <a href="~/Admin/BillDetail/Index?searchString=@item.BillID&page=1&pageSize=2">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="trahang" role="tabpanel" aria-labelledby="trahang-tab">
+                @{
+                    bill = new List<Models.EF.Bill>();
+                }
+                @foreach (var item in listBill)
+                {
+                    if (item.Status == 5)
+                    {
+                        bill.Add(item);
+                    }
+                }
+                <br />
+                <h6>@bill.Count Đơn hàng</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng đơn hàng</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Chi tiết đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (bill.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <img src="~/Data/files/nobillimage.jpg" alt="Không có đơn hàng" width="200px" height="200px" style="display:block; margin: 0 auto;" />
+                                        <p style="text-align:center;">Không tìm thấy đơn hàng</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in bill)
+                            {
+                                <tr id="row_@item.BillID">
+                                    <td>@item.BillID</td>
+                                    @foreach (var temp in user)
+                                    {
+                                        if (temp.UserID == item.UserID)
+                                        {
+                                            <td>@temp.Name</td>
+                                            break;
+                                        }
+                                    }
+                                    <td>@item.TotalMoney</td>
+                                    <td>@item.CreateDate</td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <td>Chờ xác nhận</td>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <td>Chờ lấy hàng</td>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <td>Đang giao</td>
+                                    }
+                                    else if (item.Status == 3)
+                                    {
+                                        <td>Đã giao</td>
+                                    }
+                                    else if (item.Status == 4)
+                                    {
+                                        <td>Đã hủy</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Trả hàng/ Hoàn tiền</td>
+                                    }
+                                    <td>
+                                        <a href="~/Admin/BillDetail/Index?searchString=@item.BillID&page=1&pageSize=2">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
